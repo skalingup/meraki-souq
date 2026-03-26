@@ -37,8 +37,8 @@ nav.scrolled{box-shadow:0 2px 20px rgba(0,0,0,0.06)}
 .nav-links{display:flex;gap:32px;list-style:none;align-items:center}
 .nav-links a{font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--mid);text-decoration:none;transition:color 0.2s}
 .nav-links a:hover{color:var(--accent)}
-.nav-cta{display:inline-block;padding:10px 22px;background:var(--dark);color:#fff;font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;border-radius:6px;transition:background 0.2s}
-.nav-cta:hover{background:var(--accent)}
+.nav-cta{display:inline-block;padding:10px 22px;background:var(--dark);color:#fff;font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;border-radius:6px;transition:background 0.2s,color 0.2s}
+.nav-cta:hover{background:var(--accent);color:#fff}
 
 /* ── HERO ── */
 .hero{
@@ -696,6 +696,35 @@ window.addEventListener('scroll', () => {
 });
 
 // Menu tabs
+// Render menu from admin localStorage
+(function(){
+  var saved = localStorage.getItem('meraki_menu');
+  if(!saved) return;
+  var menu;
+  try{ menu = JSON.parse(saved); } catch(e){ return; }
+  ['starters','mains','mezze','sweets','grocery'].forEach(function(panelId){
+    if(!menu[panelId] || !menu[panelId].length) return;
+    var panel = document.getElementById('panel-'+panelId);
+    if(!panel) return;
+    var container = panel.querySelector('.menu-items');
+    if(!container) return;
+    container.innerHTML = menu[panelId].map(function(item){
+      var imgHtml = item.image ? '<img src="'+item.image+'" style="width:80px;height:80px;object-fit:cover;border-radius:8px;flex-shrink:0;margin-left:16px;">' : '';
+      return '<div class="menu-item" style="align-items:center;">'+
+        '<div class="item-info">'+
+          '<div class="item-name">'+item.name+'</div>'+
+          (item.desc ? '<div class="item-desc">'+item.desc+'</div>' : '')+
+          (item.tag ? '<span class="item-tag">'+item.tag+'</span>' : '')+
+        '</div>'+
+        '<div style="display:flex;align-items:center;gap:12px;flex-shrink:0;">'+
+          '<div class="item-price">'+( item.price||'Market')+'</div>'+
+          imgHtml+
+        '</div>'+
+      '</div>';
+    }).join('');
+  });
+})();
+
 function switchTab(id) {
   document.querySelectorAll('.menu-tab').forEach((t,i) => {
     const panels = ['starters','mains','mezze','sweets','grocery'];

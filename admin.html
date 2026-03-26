@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Meraki Souq — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#faf8f4;
+  --white:#fff;
+  --dark:#1a1611;
+  --mid:#4a4035;
+  --muted:#8a7d6e;
+  --border:#e8e0d4;
+  --accent:#b85c1a;
+  --accent2:#c4943a;
+  --warm:#f5efe6;
+  --red:#c0392b;
+  --green:#27ae60;
+  --radius:10px;
+}
+body{background:var(--bg);color:var(--dark);font-family:'Lato',sans-serif;min-height:100vh}
+
+/* ── LOGIN ── */
+#login-screen{
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;background:var(--warm);
+}
+.login-card{
+  background:var(--white);border-radius:16px;padding:48px 44px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.1);width:100%;max-width:400px;
+}
+.login-card h1{
+  font-family:'Playfair Display',serif;font-size:28px;color:var(--dark);
+  margin-bottom:6px;
+}
+.login-card p{font-size:14px;color:var(--muted);margin-bottom:32px}
+.field{margin-bottom:20px}
+.field label{display:block;font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--mid);margin-bottom:8px}
+.field input{
+  width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:8px;
+  font-size:14px;font-family:'Lato',sans-serif;color:var(--dark);background:var(--bg);
+  outline:none;transition:border-color 0.2s;
+}
+.field input:focus{border-color:var(--accent)}
+.login-btn{
+  width:100%;padding:14px;background:var(--dark);color:#fff;border:none;
+  border-radius:8px;font-size:13px;font-weight:700;letter-spacing:0.1em;
+  text-transform:uppercase;cursor:pointer;transition:background 0.2s;
+}
+.login-btn:hover{background:var(--accent)}
+.login-error{color:var(--red);font-size:13px;margin-top:12px;display:none;text-align:center}
+
+/* ── ADMIN ── */
+#admin-screen{display:none}
+.admin-header{
+  background:var(--dark);color:#fff;padding:0 40px;height:64px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;
+}
+.admin-header h2{font-family:'Playfair Display',serif;font-size:20px;font-weight:700}
+.admin-header span{font-size:12px;color:rgba(255,255,255,0.5)}
+.logout-btn{
+  background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);
+  color:#fff;padding:8px 18px;border-radius:6px;font-size:12px;font-weight:700;
+  letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:background 0.2s;
+}
+.logout-btn:hover{background:rgba(255,255,255,0.2)}
+.admin-body{max-width:1000px;margin:0 auto;padding:40px 24px}
+
+/* ── TABS ── */
+.cat-tabs{display:flex;gap:4px;border-bottom:2px solid var(--border);margin-bottom:36px;overflow-x:auto}
+.cat-tab{
+  padding:11px 20px;font-size:13px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;
+  color:var(--muted);border:none;background:none;cursor:pointer;
+  border-bottom:2px solid transparent;margin-bottom:-2px;transition:color 0.2s,border-color 0.2s;white-space:nowrap;
+}
+.cat-tab:hover{color:var(--dark)}
+.cat-tab.active{color:var(--dark);border-bottom-color:var(--accent)}
+
+.cat-panel{display:none}
+.cat-panel.active{display:block}
+
+/* ── ITEM LIST ── */
+.item-list{display:flex;flex-direction:column;gap:12px;margin-bottom:32px}
+.item-row{
+  display:flex;align-items:center;gap:16px;
+  background:var(--white);border:1px solid var(--border);border-radius:var(--radius);
+  padding:14px 18px;
+}
+.item-row-img{
+  width:60px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0;
+  background:var(--warm);border:1px solid var(--border);
+}
+.item-row-img.placeholder{display:flex;align-items:center;justify-content:center;color:var(--border);font-size:22px}
+.item-row-info{flex:1;min-width:0}
+.item-row-name{font-size:15px;font-weight:700;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item-row-desc{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.item-row-meta{display:flex;gap:8px;margin-top:4px;align-items:center}
+.item-row-price{font-size:13px;font-weight:700;color:var(--accent)}
+.item-row-tag{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);background:#fdf0e6;padding:2px 7px;border-radius:4px}
+.item-actions{display:flex;gap:8px;flex-shrink:0}
+.btn-edit,.btn-delete{
+  padding:7px 14px;border-radius:6px;font-size:12px;font-weight:700;
+  letter-spacing:0.07em;text-transform:uppercase;cursor:pointer;border:none;transition:background 0.2s;
+}
+.btn-edit{background:var(--warm);color:var(--dark)}
+.btn-edit:hover{background:var(--border)}
+.btn-delete{background:#fde8e6;color:var(--red)}
+.btn-delete:hover{background:#f9c8c4}
+
+/* ── ADD BUTTON ── */
+.btn-add{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:12px 22px;background:var(--dark);color:#fff;border:none;
+  border-radius:8px;font-size:13px;font-weight:700;letter-spacing:0.08em;
+  text-transform:uppercase;cursor:pointer;transition:background 0.2s;
+}
+.btn-add:hover{background:var(--accent)}
+.btn-add svg{width:16px;height:16px;stroke:currentColor;stroke-width:2.5;fill:none}
+
+/* ── MODAL ── */
+.modal-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);
+  z-index:500;align-items:center;justify-content:center;padding:24px;
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:var(--white);border-radius:16px;padding:36px;width:100%;max-width:520px;
+  max-height:90vh;overflow-y:auto;
+  box-shadow:0 24px 80px rgba(0,0,0,0.2);
+}
+.modal h3{font-family:'Playfair Display',serif;font-size:22px;color:var(--dark);margin-bottom:24px}
+.modal .field{margin-bottom:18px}
+.modal .field input,.modal .field textarea,.modal .field select{
+  width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:8px;
+  font-size:14px;font-family:'Lato',sans-serif;color:var(--dark);background:var(--bg);
+  outline:none;transition:border-color 0.2s;resize:vertical;
+}
+.modal .field input:focus,.modal .field textarea:focus{border-color:var(--accent)}
+.modal .field textarea{min-height:80px}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:24px}
+.btn-cancel{
+  padding:11px 22px;background:var(--warm);color:var(--dark);border:none;
+  border-radius:8px;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;
+}
+.btn-cancel:hover{background:var(--border)}
+.btn-save{
+  padding:11px 22px;background:var(--dark);color:#fff;border:none;
+  border-radius:8px;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:background 0.2s;
+}
+.btn-save:hover{background:var(--accent)}
+
+/* image preview */
+.img-preview-wrap{margin-top:10px;display:flex;align-items:center;gap:14px}
+.img-preview{width:72px;height:72px;object-fit:cover;border-radius:8px;border:1px solid var(--border);display:none}
+.img-clear{background:none;border:none;color:var(--red);font-size:12px;font-weight:700;cursor:pointer;text-decoration:underline;display:none}
+
+/* save banner */
+.save-banner{
+  position:fixed;bottom:24px;right:24px;
+  background:var(--green);color:#fff;padding:14px 22px;border-radius:10px;
+  font-size:13px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,0.15);
+  transform:translateY(80px);opacity:0;transition:transform 0.3s,opacity 0.3s;z-index:600;
+}
+.save-banner.show{transform:translateY(0);opacity:1}
+
+.empty-state{
+  text-align:center;padding:48px 24px;color:var(--muted);
+  font-size:14px;border:2px dashed var(--border);border-radius:var(--radius);
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <h1>Meraki Souq</h1>
+    <p>Admin Panel — Sign in to continue</p>
+    <div class="field">
+      <label>Username</label>
+      <input type="text" id="username" autocomplete="username" placeholder="Enter username"/>
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="password" autocomplete="current-password" placeholder="Enter password"/>
+    </div>
+    <button class="login-btn" onclick="doLogin()">Sign In</button>
+    <div class="login-error" id="login-error">Incorrect username or password.</div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="admin-screen">
+  <div class="admin-header">
+    <h2>Meraki Souq Admin</h2>
+    <div style="display:flex;align-items:center;gap:20px">
+      <span>Menu Manager</span>
+      <button class="logout-btn" onclick="doLogout()">Sign Out</button>
+    </div>
+  </div>
+  <div class="admin-body">
+    <div class="cat-tabs">
+      <button class="cat-tab active" onclick="switchCat('starters',this)">Starters</button>
+      <button class="cat-tab" onclick="switchCat('mains',this)">Mains</button>
+      <button class="cat-tab" onclick="switchCat('mezze',this)">Mezze &amp; Sides</button>
+      <button class="cat-tab" onclick="switchCat('sweets',this)">Sweets</button>
+      <button class="cat-tab" onclick="switchCat('grocery',this)">Grocery</button>
+    </div>
+
+    <div id="cat-starters" class="cat-panel active"></div>
+    <div id="cat-mains" class="cat-panel"></div>
+    <div id="cat-mezze" class="cat-panel"></div>
+    <div id="cat-sweets" class="cat-panel"></div>
+    <div id="cat-grocery" class="cat-panel"></div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOnOverlay(event)">
+  <div class="modal">
+    <h3 id="modal-title">Add Item</h3>
+    <div class="field">
+      <label>Item Name *</label>
+      <input type="text" id="f-name" placeholder="e.g. Hummus Bi Tahini"/>
+    </div>
+    <div class="field">
+      <label>Description</label>
+      <textarea id="f-desc" placeholder="Short description of the dish..."></textarea>
+    </div>
+    <div class="field">
+      <label>Price</label>
+      <input type="text" id="f-price" placeholder="e.g. $8 or Market"/>
+    </div>
+    <div class="field">
+      <label>Label / Tag</label>
+      <input type="text" id="f-tag" placeholder="e.g. Fan Favorite, Best Seller"/>
+    </div>
+    <div class="field">
+      <label>Item Photo</label>
+      <input type="file" id="f-image" accept="image/*" onchange="handleImageUpload(event)"/>
+      <div class="img-preview-wrap">
+        <img id="img-preview" class="img-preview" src="" alt="preview"/>
+        <button class="img-clear" id="img-clear-btn" onclick="clearImage()">Remove photo</button>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveItem()">Save Item</button>
+    </div>
+  </div>
+</div>
+
+<div class="save-banner" id="save-banner">Changes saved!</div>
+
+<script>
+// ── CREDENTIALS ──
+var CREDS = {u:'mmaloof',p:'MERAKIs0uq'};
+
+// ── DEFAULT MENU DATA ──
+var DEFAULT_MENU = {
+  starters:[
+    {id:uid(),name:'Hummus Bi Tahini',desc:"Creamy hand-made hummus with tahini, olive oil, and warm spices. Sittie Maloof's signature recipe.",price:'Market',tag:'Fan Favorite',image:''},
+    {id:uid(),name:'Pita Bread',desc:'Soft, pillowy house-made pita — the perfect companion for hummus, spreads, and dips.',price:'Market',tag:'Made In-House',image:''},
+    {id:uid(),name:'Tabbouleh',desc:'Traditional Lebanese parsley salad with fresh tomato, lemon, mint, and bulgur wheat.',price:'Market',tag:'',image:''},
+    {id:uid(),name:'Labne',desc:"Thick, tangy strained yogurt spread with olive oil and za'atar. Order with hummus and save!",price:'Market',tag:'2 for 1 Special',image:''}
+  ],
+  mains:[
+    {id:uid(),name:'Shawarma Pita Wrap',desc:'Slow-seasoned shawarma in warm house pita with fresh toppings, garlic sauce and pickled vegetables.',price:'Market',tag:'Best Seller',image:''},
+    {id:uid(),name:'Gyro Wrap',desc:'',price:'Market',tag:'',image:''},
+    {id:uid(),name:'Mezze Plate',desc:'A generous spread — hummus, tabbouleh, labne, olives, feta, and fresh pita. Perfect for sharing.',price:'Market',tag:'Great for Sharing',image:''},
+    {id:uid(),name:'Shawarma Bowl',desc:'',price:'Market',tag:'',image:''}
+  ],
+  mezze:[
+    {id:uid(),name:'Olives & Feta',desc:'',price:'Market',tag:'',image:''},
+    {id:uid(),name:'Pickled Turnips',desc:'',price:'Market',tag:'',image:''},
+    {id:uid(),name:'Fattoush Salad',desc:'',price:'Market',tag:'',image:''},
+    {id:uid(),name:'House Rice',desc:'',price:'Market',tag:'',image:''}
+  ],
+  sweets:[
+    {id:uid(),name:'Baklava',desc:'Homemade baklava layered with pistachios and honey syrup. Rich, sweet, and utterly unforgettable.',price:'Market',tag:'While Supplies Last',image:''},
+    {id:uid(),name:'Mamoul',desc:'',price:'Market',tag:'',image:''},
+    {id:uid(),name:'Knafeh',desc:'',price:'Market',tag:'',image:''}
+  ],
+  grocery:[
+    {id:uid(),name:'Specialty Spices',desc:'',price:'Varies',tag:'',image:''},
+    {id:uid(),name:'Rose Water & Orange Blossom',desc:'',price:'Varies',tag:'',image:''},
+    {id:uid(),name:'Tahini & Olive Oil',desc:'',price:'Varies',tag:'',image:''},
+    {id:uid(),name:'Specialty Pantry Items',desc:'',price:'Varies',tag:'',image:''}
+  ]
+};
+
+function uid(){ return Math.random().toString(36).slice(2,10); }
+
+// ── STATE ──
+var menu = {};
+var editingCat = null;
+var editingId = null;
+var currentImageData = '';
+
+// ── AUTH ──
+function doLogin(){
+  var u = document.getElementById('username').value.trim();
+  var p = document.getElementById('password').value;
+  if(u === CREDS.u && p === CREDS.p){
+    sessionStorage.setItem('meraki_admin','1');
+    showAdmin();
+  } else {
+    document.getElementById('login-error').style.display='block';
+  }
+}
+document.getElementById('password').addEventListener('keydown',function(e){
+  if(e.key==='Enter') doLogin();
+});
+document.getElementById('username').addEventListener('keydown',function(e){
+  if(e.key==='Enter') doLogin();
+});
+
+function doLogout(){
+  sessionStorage.removeItem('meraki_admin');
+  document.getElementById('admin-screen').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+}
+
+function showAdmin(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('admin-screen').style.display='block';
+  loadMenu();
+  renderAll();
+}
+
+// ── MENU DATA ──
+function loadMenu(){
+  var saved = localStorage.getItem('meraki_menu');
+  if(saved){
+    try{ menu = JSON.parse(saved); } catch(e){ menu = deepCopy(DEFAULT_MENU); }
+  } else {
+    menu = deepCopy(DEFAULT_MENU);
+  }
+}
+
+function saveMenu(){
+  localStorage.setItem('meraki_menu', JSON.stringify(menu));
+  showBanner();
+}
+
+function deepCopy(o){ return JSON.parse(JSON.stringify(o)); }
+
+// ── RENDER ──
+var CATS = ['starters','mains','mezze','sweets','grocery'];
+var CAT_LABELS = {starters:'Starters',mains:'Mains',mezze:'Mezze & Sides',sweets:'Sweets',grocery:'Grocery'};
+
+function renderAll(){
+  CATS.forEach(function(cat){ renderCat(cat); });
+}
+
+function renderCat(cat){
+  var el = document.getElementById('cat-'+cat);
+  var items = menu[cat] || [];
+  var html = '<div class="item-list">';
+  if(items.length === 0){
+    html += '<div class="empty-state">No items yet. Add your first item below.</div>';
+  } else {
+    items.forEach(function(item){
+      html += '<div class="item-row" id="row-'+item.id+'">';
+      if(item.image){
+        html += '<img class="item-row-img" src="'+item.image+'" alt="'+escHtml(item.name)+'">';
+      } else {
+        html += '<div class="item-row-img placeholder" style="background:var(--warm);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;">🍽</div>';
+      }
+      html += '<div class="item-row-info">';
+      html += '<div class="item-row-name">'+escHtml(item.name)+'</div>';
+      if(item.desc) html += '<div class="item-row-desc">'+escHtml(item.desc)+'</div>';
+      html += '<div class="item-row-meta">';
+      if(item.price) html += '<span class="item-row-price">'+escHtml(item.price)+'</span>';
+      if(item.tag) html += '<span class="item-row-tag">'+escHtml(item.tag)+'</span>';
+      html += '</div></div>';
+      html += '<div class="item-actions">';
+      html += '<button class="btn-edit" onclick="openEdit(\''+cat+'\',\''+item.id+'\')">Edit</button>';
+      html += '<button class="btn-delete" onclick="deleteItem(\''+cat+'\',\''+item.id+'\')">Delete</button>';
+      html += '</div></div>';
+    });
+  }
+  html += '</div>';
+  html += '<button class="btn-add" onclick="openAdd(\''+cat+'\')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add '+CAT_LABELS[cat]+' Item</button>';
+  el.innerHTML = html;
+}
+
+function escHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── TABS ──
+function switchCat(cat, btn){
+  document.querySelectorAll('.cat-tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.cat-panel').forEach(function(p){ p.classList.remove('active'); });
+  btn.classList.add('active');
+  document.getElementById('cat-'+cat).classList.add('active');
+}
+
+// ── MODAL ──
+function openAdd(cat){
+  editingCat = cat;
+  editingId = null;
+  currentImageData = '';
+  document.getElementById('modal-title').textContent = 'Add Item — '+CAT_LABELS[cat];
+  document.getElementById('f-name').value='';
+  document.getElementById('f-desc').value='';
+  document.getElementById('f-price').value='Market';
+  document.getElementById('f-tag').value='';
+  document.getElementById('f-image').value='';
+  document.getElementById('img-preview').style.display='none';
+  document.getElementById('img-clear-btn').style.display='none';
+  document.getElementById('modal-overlay').classList.add('open');
+  document.getElementById('f-name').focus();
+}
+
+function openEdit(cat, id){
+  editingCat = cat;
+  editingId = id;
+  var item = (menu[cat]||[]).find(function(i){ return i.id===id; });
+  if(!item) return;
+  currentImageData = item.image||'';
+  document.getElementById('modal-title').textContent = 'Edit Item';
+  document.getElementById('f-name').value = item.name||'';
+  document.getElementById('f-desc').value = item.desc||'';
+  document.getElementById('f-price').value = item.price||'';
+  document.getElementById('f-tag').value = item.tag||'';
+  document.getElementById('f-image').value='';
+  if(item.image){
+    document.getElementById('img-preview').src = item.image;
+    document.getElementById('img-preview').style.display='block';
+    document.getElementById('img-clear-btn').style.display='inline';
+  } else {
+    document.getElementById('img-preview').style.display='none';
+    document.getElementById('img-clear-btn').style.display='none';
+  }
+  document.getElementById('modal-overlay').classList.add('open');
+  document.getElementById('f-name').focus();
+}
+
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+
+function closeModalOnOverlay(e){
+  if(e.target === document.getElementById('modal-overlay')) closeModal();
+}
+
+function saveItem(){
+  var name = document.getElementById('f-name').value.trim();
+  if(!name){ document.getElementById('f-name').focus(); return; }
+  var item = {
+    id: editingId || uid(),
+    name: name,
+    desc: document.getElementById('f-desc').value.trim(),
+    price: document.getElementById('f-price').value.trim() || 'Market',
+    tag: document.getElementById('f-tag').value.trim(),
+    image: currentImageData
+  };
+  if(!menu[editingCat]) menu[editingCat]=[];
+  if(editingId){
+    var idx = menu[editingCat].findIndex(function(i){ return i.id===editingId; });
+    if(idx > -1) menu[editingCat][idx] = item;
+  } else {
+    menu[editingCat].push(item);
+  }
+  saveMenu();
+  renderCat(editingCat);
+  closeModal();
+}
+
+function deleteItem(cat, id){
+  if(!confirm('Delete this item?')) return;
+  menu[cat] = (menu[cat]||[]).filter(function(i){ return i.id!==id; });
+  saveMenu();
+  renderCat(cat);
+}
+
+// ── IMAGE ──
+function handleImageUpload(e){
+  var file = e.target.files[0];
+  if(!file) return;
+  // Resize before storing
+  var reader = new FileReader();
+  reader.onload = function(ev){
+    var img = new Image();
+    img.onload = function(){
+      var canvas = document.createElement('canvas');
+      var maxSize = 400;
+      var w = img.width, h = img.height;
+      if(w > h){ if(w>maxSize){h=Math.round(h*maxSize/w);w=maxSize;} }
+      else { if(h>maxSize){w=Math.round(w*maxSize/h);h=maxSize;} }
+      canvas.width=w; canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      currentImageData = canvas.toDataURL('image/jpeg',0.82);
+      document.getElementById('img-preview').src = currentImageData;
+      document.getElementById('img-preview').style.display='block';
+      document.getElementById('img-clear-btn').style.display='inline';
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearImage(){
+  currentImageData='';
+  document.getElementById('f-image').value='';
+  document.getElementById('img-preview').style.display='none';
+  document.getElementById('img-clear-btn').style.display='none';
+}
+
+// ── BANNER ──
+function showBanner(){
+  var b = document.getElementById('save-banner');
+  b.classList.add('show');
+  setTimeout(function(){ b.classList.remove('show'); },2200);
+}
+
+// ── INIT ──
+if(sessionStorage.getItem('meraki_admin')==='1'){
+  showAdmin();
+}
+</script>
+</body>
+</html>
