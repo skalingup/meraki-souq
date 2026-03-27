@@ -3,8 +3,22 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Meraki Souq – Middle Eastern Market</title>
+<title>Meraki Souq – Middle Eastern Market | Ducktown, TN</title>
 <link id="favicon" rel="icon" type="image/webp" href=""/>
+<meta name="description" content="Fresh Lebanese food, shawarma, hummus, tabbouleh & specialty Middle Eastern grocery in Ducktown, Tennessee. Handmade daily from Sittie Maloof's recipes. Call (706) 851-0280."/>
+<meta name="robots" content="index, follow"/>
+<link rel="canonical" href="https://skalingup.github.io/home"/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://skalingup.github.io/home"/>
+<meta property="og:site_name" content="Meraki Souq"/>
+<meta property="og:title" content="Meraki Souq – Middle Eastern Market | Ducktown, TN"/>
+<meta property="og:description" content="Fresh Lebanese food & specialty Middle Eastern grocery in Ducktown, Tennessee. Handmade hummus, shawarma, tabbouleh & more — crafted with love from Sittie Maloof's recipes."/>
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Meraki Souq – Middle Eastern Market | Ducktown, TN"/>
+<meta name="twitter:description" content="Fresh Lebanese food & specialty Middle Eastern grocery in Ducktown, Tennessee. Call (706) 851-0280."/>
+<meta name="theme-color" content="#b85c1a"/>
+<meta name="geo.region" content="US-TN"/>
+<meta name="geo.placename" content="Ducktown, Tennessee"/>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -106,7 +120,8 @@ nav.scrolled{box-shadow:0 2px 20px rgba(0,0,0,0.06)}
 .section-sub{font-size:15px;font-weight:300;color:var(--muted);max-width:520px;line-height:1.7;margin-bottom:48px}
 
 /* Tab nav */
-.menu-tabs{display:flex;gap:4px;border-bottom:2px solid var(--border);margin-bottom:56px;overflow-x:auto}
+a[href^="tel:"],a[href^="mailto:"]{color:inherit;text-decoration:none}
+.menu-tabs{display:flex;gap:4px;border-bottom:2px solid var(--border);margin-bottom:56px;flex-wrap:wrap;user-select:none}
 .menu-tab{
   padding:12px 22px;font-size:13px;font-weight:700;letter-spacing:0.08em;
   text-transform:uppercase;color:var(--muted);
@@ -174,11 +189,11 @@ nav.scrolled{box-shadow:0 2px 20px rgba(0,0,0,0.06)}
 .about-gallery-img.tall img{aspect-ratio:3/5;height:100%}
 
 /* ── PHOTO SCROLL ── */
-.photo-scroll-section{padding:80px 0;overflow:hidden}
+.photo-scroll-section{padding:80px 0}
 .photo-scroll-header{padding:0 80px;margin-bottom:40px;display:flex;justify-content:space-between;align-items:flex-end}
 .photo-scroll-header h2{font-family:'Playfair Display',serif;font-size:clamp(28px,3.5vw,44px);font-weight:700;color:var(--dark)}
 .photo-scroll-header a{font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);text-decoration:none}
-.photo-track{display:flex;gap:16px;padding:0 80px;overflow-x:auto;scroll-snap-type:x mandatory;-ms-overflow-style:none;scrollbar-width:none}
+.photo-track{display:flex;gap:16px;padding:0 80px 8px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:80px;-ms-overflow-style:none;scrollbar-width:none}
 .photo-track::-webkit-scrollbar{display:none}
 .photo-card{flex-shrink:0;width:260px;scroll-snap-align:start;border-radius:14px;overflow:hidden;position:relative;cursor:pointer}
 .photo-card img{width:100%;height:320px;object-fit:cover;display:block;transition:transform 0.4s}
@@ -263,7 +278,7 @@ footer{
   .about-strip-text h2{font-size:clamp(26px,5vw,36px)}
   .photo-scroll-section{padding:48px 0 60px}
   .photo-scroll-header{padding:0 24px;flex-direction:column;align-items:flex-start;gap:8px}
-  .photo-track{padding:0 24px;gap:14px}
+  .photo-track{padding:0 24px 8px;gap:14px;scroll-padding-left:24px}
   .photo-card{width:230px}
   .faq-section{padding:60px 24px}
   .faq-title{font-size:clamp(26px,5vw,36px)}
@@ -289,8 +304,8 @@ footer{
   .menu-item{flex-direction:column;gap:8px}
   .item-price{align-self:flex-start}
   .about-strip{padding:48px 16px}
-  .photo-scroll-header{padding:0 16px}
-  .photo-track{padding:0 16px}
+  .photo-scroll-header{padding:0 20px}
+  .photo-track{padding:0 20px 8px;scroll-padding-left:20px}
   .photo-card{width:200px}
   .faq-section{padding:48px 16px}
   .faq-q span{font-size:14px}
